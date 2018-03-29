@@ -10,8 +10,8 @@ using System;
 
 namespace BerrasBioDB.Migrations
 {
-    [DbContext(typeof(BerrasBioDBContext))]
-    [Migration("20180320135539_Initial")]
+    [DbContext(typeof(Context))]
+    [Migration("20180327124705_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

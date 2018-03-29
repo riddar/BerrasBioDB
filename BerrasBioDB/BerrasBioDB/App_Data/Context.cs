@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace BerrasBioDB.App_Data
 {
-    public class BerrasBioDBContext : DbContext
+    public class Context : DbContext
     {
-        public BerrasBioDBContext(DbContextOptions options) : base(options) { }
+        public Context(DbContextOptions options) : base(options) { }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Ticket> Tickets { get; set; }

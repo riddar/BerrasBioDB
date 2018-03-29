@@ -10,8 +10,8 @@ using System;
 
 namespace BerrasBioDB.Migrations
 {
-    [DbContext(typeof(BerrasBioDBContext))]
-    partial class BerrasBioDBContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(Context))]
+    partial class ContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -52,6 +52,10 @@ namespace BerrasBioDB.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.Property<int?>("VenueId");
 

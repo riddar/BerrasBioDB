@@ -1,0 +1,26 @@
+﻿body {
+    background-color: black;
+    color: white;
+}
+
+.bookable{
+    background-color: blue;
+}
+
+.nonebookable{
+    background-color: orangered;
+}
+
+.navbar, .navbar-inverse, .navbar-fixed-top{
+    background-color: red;
+    color: white;
+}
+
+.navbar-header {
+    background-color: red;
+    color: white;
+}
+
+.movie_banner{
+    width: 720px;
+}

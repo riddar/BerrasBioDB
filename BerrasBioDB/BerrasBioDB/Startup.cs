@@ -23,9 +23,9 @@ namespace BerrasBioDB
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionstring = Configuration.GetConnectionString("EndPoint");
+            services.AddDbContext<Context>(db => db.UseSqlServer(connectionstring));
             services.AddMvc();
-            string connString = Configuration.GetConnectionString("EndPoint");
-            services.AddDbContext<BerrasBioDBContext>(options => options.UseSqlServer(connString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,7 +38,7 @@ namespace BerrasBioDB
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Berra/Error");
             }
 
             app.UseStaticFiles();
@@ -47,7 +47,7 @@ namespace BerrasBioDB
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Berra}/{action=Index}/{id?}");
             });
         }
     }
