@@ -70,7 +70,71 @@ namespace BerrasBioDB.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> CustomersIndex(string sortOrder)
+        {
+            var tempContext = await _context.Tickets.Include(t => t.Movie).Include(t => t.Seat).Include(t => t.Customer).Include(t => t.Seat.Venue).ToListAsync();
+
+            ViewBag.StartTime = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewBag.MovieTitle = sortOrder == "Title" ? "Title desc" : "Title";
+            ViewBag.SeatName = sortOrder == "Seat" ? "Seat desc" : "Seat";
+            ViewBag.VenueName = sortOrder == "Venue" ? "Venue desc" : "Venue";
+            ViewBag.CustomerName = sortOrder == "Customer" ? "Customer desc" : "Customer";
+
+            switch (sortOrder)
+            {
+                case "Date":
+                    tempContext = tempContext.OrderBy(t => t.StartTime).ToList();
+                    break;
+                case "date_desc":
+                    tempContext = tempContext.OrderByDescending(t => t.StartTime).ToList();
+                    break;
+                case "Title":
+                    tempContext = tempContext.OrderBy(t => t.Movie.Title).ToList();
+                    break;
+                case "Title_desc":
+                    tempContext = tempContext.OrderByDescending(t => t.Movie.Title).ToList();
+                    break;
+                case "Seat":
+                    tempContext = tempContext.OrderBy(t => t.Seat.Name).ToList();
+                    break;
+                case "Seat_Desc":
+                    tempContext = tempContext.OrderByDescending(t => t.Seat.Name).ToList();
+                    break;
+                case "Venue":
+                    tempContext = tempContext.OrderBy(t => t.Seat.Venue.Name).ToList();
+                    break;
+                case "Venue_Desc":
+                    tempContext = tempContext.OrderByDescending(t => t.Seat.Venue.Name).ToList();
+                    break;
+                case "Customer":
+                    tempContext = tempContext.OrderBy(t => t.Customer.Name).ToList();
+                    break;
+                case "Customer_desc":
+                    tempContext = tempContext.OrderByDescending(t => t.Customer.Name).ToList();
+                    break;
+                default:
+                    break;
+            }
+
+
+            return View(tempContext);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Confirmed(Ticket _ticket)
+        {
+            if (_ticket == null)
+                return NotFound();
+
+            var ticket = await _context.Tickets.Include(t => t.Movie).Include(t => t.Seat).Include(t => t.Customer).SingleOrDefaultAsync(m => m.Id == _ticket.Id);
+            if (ticket == null)
+                return NotFound();
+
+            return View(ticket);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> NotConfirmed(Ticket _ticket)
         {
             if (_ticket == null)
                 return NotFound();
@@ -280,6 +344,7 @@ namespace BerrasBioDB.Controllers
             return View(_ticket);
         }
 
+
         [HttpGet]
         public IActionResult AddVenue()
         {
@@ -310,9 +375,93 @@ namespace BerrasBioDB.Controllers
                 return NotFound();
         }
 
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost, ActionName("Login")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginConfirmed(Customer _customer)
+        {
+            if (_customer == null)
+                return NotFound();
+
+            
+            var customers = await _context.Customers.ToListAsync();
+            
+            if (!CustomerExists(_customer.Name))
+            {
+                await _context.Customers.AddAsync(_customer);
+                await _context.SaveChangesAsync();
+                var customer = await _context.Customers.Include(t => t.Tickets).Include(t => t.Tickets).SingleOrDefaultAsync(m => m.Name == _customer.Name);
+                return View("CustomersBooking", customer);
+            }
+            else
+            {
+                var customer = await _context.Customers.Include(t => t.Tickets).Include(t => t.Tickets).SingleOrDefaultAsync(m => m.Name == _customer.Name);
+                return View("CustomersBooking", customer);
+            }      
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CustomersBooking(Customer _customer)
+        {
+            if (_customer == null)
+                return NotFound();
+
+            var customer = await _context.Customers.Include(t => t.Tickets).SingleOrDefaultAsync(m => m.Name == _customer.Name);
+
+            if (customer == null)
+                return NotFound();
+
+            return View(customer);
+        }
+
+
+        [HttpPost, ActionName("CustomersBooking")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CustomersBookingConfirmed(Customer _customer)
+        {
+            if (_customer != null)
+            {
+                var tickets = await _context.Tickets.Where(t => t.Customer.Id == _customer.Id).ToListAsync();
+                if (tickets.Count >= 12)
+                    return View("TooMany", tickets.FirstOrDefault());
+
+               var ticket = await _context.Tickets.Where(t => t.Customer.Id == _customer.Id).FirstOrDefaultAsync();
+
+
+                try
+                {
+                    ticket.Customer = _customer;
+                    _context.Update(ticket);
+                    await _context.SaveChangesAsync();
+                    return View("Confirmed", ticket);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!TicketExists(_customer.Id))
+                        return View("NotConfirmed", ticket);
+                    else
+                        throw;
+                }
+            }
+
+            return View("CustomersIndex");
+        }
+
+
+
         private bool TicketExists(int id)
         {
             return _context.Tickets.Any(e => e.Id == id);
+        }
+
+        private bool CustomerExists(string name)
+        {
+            return _context.Customers.Any(e => e.Name == name);
         }
 
     }

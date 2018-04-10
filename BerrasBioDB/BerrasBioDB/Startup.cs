@@ -47,7 +47,7 @@ namespace BerrasBioDB
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Berra}/{action=Index}/{id?}");
+                    template: "{controller=Berra}/{action=Login}/{id?}");
             });
         }
     }
