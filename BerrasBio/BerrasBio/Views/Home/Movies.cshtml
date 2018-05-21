@@ -1,0 +1,48 @@
+﻿@model IEnumerable<BerrasBio.Models.Movie>
+
+<h2>Movies</h2>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    Available Tickets
+                </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+    @if(item.Tickets.Where(t => t.User == null).Count() > 0)
+    {
+        <tr style="background-color:aliceblue;">
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @item.Tickets.Where(t => t.User == null).Count() (@item.Tickets.Count())
+            </td>
+            <td>
+                <a asp-action="MovieIndex" asp-route-id="@item.Id">Tickets</a>
+            </td>
+        </tr>
+    }
+    @if(item.Tickets.Where(t => t.User == null).Count() <= 0)
+    {
+        <tr style="background-color: red;">
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @item.Tickets.Where(t => t.User == null).Count() (@item.Tickets.Count())
+            </td>
+            <td>
+                (No Tickets left!)
+            </td>
+        </tr>
+    }
+
+}
+    </tbody>
+</table>

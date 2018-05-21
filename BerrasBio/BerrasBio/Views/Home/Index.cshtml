@@ -1,0 +1,101 @@
+﻿@inject BerrasBio.Data.ApplicationDbContext _context;
+@{ViewData["Title"] = "BerrasBio";}
+
+
+<form asp-action="Index">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <h2>Bookable</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Html.ActionLink("Id", "Index", new { sortOrder = ViewBag.Id })</th>
+                    <th>@Html.ActionLink("StartTime", "Index", new { sortOrder = ViewBag.StartTime })</th>
+                    <th>@Html.ActionLink("Title", "Index", new { sortOrder = ViewBag.MovieTitle })</th>
+                    <th>@Html.ActionLink("Seat", "Index", new { sortOrder = ViewBag.SeatName })</th>
+                    <th>@Html.ActionLink("Venue", "Index", new { sortOrder = ViewBag.VenueName })</th>
+                    <th>@Html.ActionLink("User", "Index", new { sortOrder = ViewBag.User })</th>
+                </tr>
+            </thead>
+            <tbody class="bookable">
+                @foreach (var item in _context.Tickets.Where(t => t.User == null))
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Movie.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Seat.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Seat.Venue.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User.UserName)
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <a asp-action="BuyTicket" asp-route-id="@item.Id">Buy</a>
+                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <h2>Booked</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Html.ActionLink("Id", "Index", new { sortOrder = ViewBag.Id })</th>
+                    <th>@Html.ActionLink("StartTime", "Index", new { sortOrder = ViewBag.StartTime })</th>
+                    <th>@Html.ActionLink("Title", "Index", new { sortOrder = ViewBag.MovieTitle })</th>
+                    <th>@Html.ActionLink("Seat", "Index", new { sortOrder = ViewBag.SeatName })</th>
+                    <th>@Html.ActionLink("Venue", "Index", new { sortOrder = ViewBag.VenueName })</th>
+                    <th>@Html.ActionLink("User", "Index", new { sortOrder = ViewBag.User })</th>
+                </tr>
+            </thead>
+
+            <tbody class="booked">
+                @foreach (var item in _context.Tickets.Where(t => t.User.UserName == User.Identity.Name))
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Movie.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Seat.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Seat.Venue.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User.UserName);
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            <a asp-action="Remove" asp-route-id="@item.Id">Remove</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <h2>please login!</h2>
+    }
+</form>

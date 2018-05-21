@@ -1,0 +1,27 @@
+﻿body {
+    background: url(../images/MovieBackground.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.navbar, navbar-inverse, navbar-fixed-top{
+    background-color: red;
+}
+
+.bookable {
+    background-color: aliceblue;
+}
+
+.booked {
+    background-color: antiquewhite;
+}
+
+h2 {
+    color: white;
+}
+
+th {
+    color: white;
+}

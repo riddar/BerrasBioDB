@@ -1,0 +1,41 @@
+﻿@model BerrasBio.Models.Ticket
+@inject BerrasBio.Data.ApplicationDbContext _context;
+
+
+<form asp-action="BuyTicket" method="post">
+
+</form>
+<div>
+    <h4>Ticket</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.StartTime)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.StartTime)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Movie)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Movie.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Seat)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Seat.Name)
+        </dd>
+    </dl>
+    <form asp-action="BuyTicket" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Buy" class="btn btn-default" />
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
