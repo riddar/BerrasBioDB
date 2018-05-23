@@ -118,8 +118,17 @@ namespace BerrasBio.Controllers
 
             ticket.User = user;
 
-            //if (user.Tickets.Count() <= 12)
-            //    return RedirectToAction(nameof(TooMany), ticket);
+            user = await userManager.GetUserAsync(HttpContext.User);
+
+            var tickets = await context.Tickets
+                .Include(t => t.Movie)
+                .Include(t => t.Seat)
+                .Include(t => t.User)
+                .Where(t => t.User == user)
+                .ToListAsync();
+
+            if (tickets.Count() >= 12)
+                return RedirectToAction(nameof(TooMany), ticket);
 
             context.Update(ticket);
             await context.SaveChangesAsync();
