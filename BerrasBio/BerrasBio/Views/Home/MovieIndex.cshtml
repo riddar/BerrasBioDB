@@ -44,8 +44,9 @@
                         </td>
                         <td>
                             <div class="form-group">
-                                <a asp-action="BuyTicket" asp-route-id="@item.Id">Buy</a>
-                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                <a asp-action="BuyTicket" asp-route-id="@item.Id">Buy Single Ticket</a> |
+                                <a asp-action="AddTicket" asp-route-id="@item.Id">Add Ticket</a> |
+                                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                             </div>
                         </td>
                     </tr>
@@ -66,7 +67,7 @@
             </thead>
 
             <tbody class="booked">
-                @foreach (var item in _context.Tickets.Where(t => t.User.UserName == User.Identity.Name).Where(t => t.Movie == Model.FirstOrDefault().Movie))
+                @foreach (var item in _context.Tickets.Where(t => t.User.UserName == User.Identity.Name && t.Movie == Model.FirstOrDefault().Movie))
                 {
                     <tr>
                         <td>

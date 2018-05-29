@@ -133,7 +133,50 @@ namespace BerrasBio.Controllers
             context.Update(ticket);
             await context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Confirmed), ticket);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddTicket(int? id)
+        {
+            if (id == null)
+                return View();
+
+            var ticket = await context.Tickets
+                    .Include(t => t.User)
+                    .Include(t => t.Movie)
+                    .Include(t => t.Seat)
+                    .Where(t => t.Id == id)
+                    .FirstOrDefaultAsync();
+
+            var user = await userManager.GetUserAsync(HttpContext.User);
+
+            ticket.User = user;
+
+            var tickets = await context.Tickets
+                .Include(t => t.Movie)
+                .Include(t => t.Seat)
+                .ThenInclude(s => s.Venue)
+                .Include(t => t.User)
+                .Where(t => t.User == user)
+                .ToListAsync();
+
+            if (tickets.Count() >= 12)
+                return RedirectToAction(nameof(TooMany), ticket);
+
+            var tempTickets = await context.Tickets
+                .Include(t => t.Movie)
+                .Include(t => t.Seat)
+                .ThenInclude(s => s.Venue)
+                .Include(t => t.User)
+                .Where(t => t.Movie == ticket.Movie)
+                .ToListAsync();
+
+            context.Update(ticket);
+            await context.SaveChangesAsync();
+
+            return View("MovieIndex", tempTickets);
+            //return RedirectToAction("MovieIndex", tickets);
         }
 
         [HttpGet]
@@ -196,21 +239,6 @@ namespace BerrasBio.Controllers
                 .Include(t => t.Seat)
                 .ThenInclude(s => s.Venue)
                 .Where(t => t.Id == Id)
-                .FirstOrDefaultAsync();
-
-            return View(ticket);
-        }
-
-        [HttpPost, ActionName("Remove")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RemoveConfirmed(Ticket ticket)
-        {
-            ticket = await context.Tickets
-                .Include(t => t.User)
-                .Include(t => t.Movie)
-                .Include(t => t.Seat)
-                .ThenInclude(s => s.Venue)
-                .Where(t => t.Id == ticket.Id)
                 .FirstOrDefaultAsync();
 
             ticket.User = null;
